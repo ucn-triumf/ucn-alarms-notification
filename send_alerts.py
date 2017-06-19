@@ -94,7 +94,7 @@ if len(emails):
 	subject = "UCN DAQ "
 	if (alert_type == "alarm"):
 		text += "An alarm has been raised! Please check http://ucndaq01.triumf.ca/ for full details.\n\n" + message
-		subject += " - a temperature alarm has been raised!"
+		subject += " - an alarm has been raised!"
 	if (alert_type == "criticalalarm"):
 		text += "A critical alarm has been raised! Equipment is being shutdown. "
 		text += "Please check https://ucndaq01.triumf.ca/ for full details.\n\n" + message
