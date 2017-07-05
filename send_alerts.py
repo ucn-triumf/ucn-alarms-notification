@@ -62,7 +62,7 @@ print alarm_message
 #smses = ["sms:16042509160@sms.rogers.com"]
 smses = []
 slacks = []
-emails = ["lindner@triumf.ca"]
+emails = ["lindner@triumf.ca","fkuchler@triumf.ca","rpicker@triumf.ca","bfranke@triumf.ca","shinsuke.kawasaki@kek.jp","Ryohei.Matsumiya@rcnp.osaka-u.ac.jp","epierre@triumf.ca"]
 #emails = []
 
 me = "UCN DAQ <auto-notifications@ucndaq01.triumf.ca>"
