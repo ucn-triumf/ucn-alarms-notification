@@ -77,7 +77,7 @@ if len(smses):
 	elif (alert_type == "test"):
 		subject = "Hello!"
 		text += "This is a test message from the UCN DAQ."
-	text += " Check http://ucndaq01.triumf.ca/ for more details."
+	text += " Check https://ucndaq01.triumf.ca/ for more details."
 	msg = MIMEText(text)
 	msg['Subject'] = subject
 	msg['From'] = me
@@ -93,7 +93,7 @@ if len(emails):
 	text = ""
 	subject = "UCN DAQ "
 	if (alert_type == "alarm"):
-		text += "An alarm has been raised! Please check http://ucndaq01.triumf.ca/ for full details.\n\n" + message
+		text += "An alarm has been raised! Please check https://ucndaq01.triumf.ca/ for full details.\n\n" + message
 		subject += " - an alarm has been raised!"
 	if (alert_type == "criticalalarm"):
 		text += "A critical alarm has been raised! Equipment is being shutdown. "
