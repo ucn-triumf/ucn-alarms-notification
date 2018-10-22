@@ -4,7 +4,10 @@
 # June 2017
 
 # Send warning
-python /home/ucn/online/ucn-alarms-notification/send_alerts.py alarm "$1"
+date >> /home/ucn/tmp/testlog
+"$1" >> /home/ucn/tmp/testlog
+echo "Bla" >> /home/ucn/tmp/testlog
+python /home/ucn/online/ucn-alarms-notification/send_alerts.py alarm "$1" >> /home/ucn/tmp/testlog
 
 # Shutdown stuff... currently not used
 #odbedit -c "msg CriticalAlarm 'Shutting down HV'"

@@ -21,7 +21,7 @@ from email.mime.text import MIMEText
 
 def get_json_alarms():
 
-        command = "curl 'http://ucndaq01.triumf.ca/?cmd=jcopy&odb=/Alarms/Alarms&encoding=json'"
+        command = "curl 'http://localhost:8082/?cmd=jcopy&odb=/Alarms/Alarms&encoding=json'"
 	p = Popen(command, shell=True, stdout=PIPE, stderr=PIPE)
 	stdout, stderr = p.communicate()
 
@@ -62,10 +62,10 @@ print alarm_message
 #smses = ["sms:16042509160@sms.rogers.com"]
 smses = []
 slacks = []
-emails = ["lindner@triumf.ca","fkuchler@triumf.ca","rpicker@triumf.ca","bfranke@triumf.ca","shinsuke.kawasaki@kek.jp","matsumiya@triumf.ca","epierre@triumf.ca","wschreyer@triumf.ca","kikawa@triumf.ca"]
+emails = ["lindner@triumf.ca","fkuchler@triumf.ca","rpicker@triumf.ca","bfranke@triumf.ca","shinsuke.kawasaki@kek.jp","matsumiya@triumf.ca","epierre@triumf.ca","wschreyer@triumf.ca","giampapietro@gmail.com"]
 #emails = []
 
-me = "UCN DAQ <auto-notifications@ucndaq01.triumf.ca>"
+me = "UCN DAQ <auto-notifications@daq01.ucn.triumf.ca>"
 			
 if len(smses):
 	subject = "Run " + str(run_number)
@@ -77,7 +77,7 @@ if len(smses):
 	elif (alert_type == "test"):
 		subject = "Hello!"
 		text += "This is a test message from the UCN DAQ."
-	text += " Check https://ucndaq01.triumf.ca/ for more details."
+	text += " Check https://daq01.ucn.triumf.ca/ for more details."
 	msg = MIMEText(text)
 	msg['Subject'] = subject
 	msg['From'] = me
@@ -93,11 +93,11 @@ if len(emails):
 	text = ""
 	subject = "UCN DAQ "
 	if (alert_type == "alarm"):
-		text += "An alarm has been raised! Please check https://ucndaq01.triumf.ca/ for full details.\n\n" + message
+		text += "An alarm has been raised! Please check https://daq01.ucn.triumf.ca/ for full details.\n\n" + message
 		subject += " - an alarm has been raised!"
 	if (alert_type == "criticalalarm"):
 		text += "A critical alarm has been raised! Equipment is being shutdown. "
-		text += "Please check https://ucndaq01.triumf.ca/ for full details.\n\n" + message
+		text += "Please check https://daq01.ucn.triumf.ca/ for full details.\n\n" + message
 		subject += " - a critical temperature alarm has been raised!"
         text += alarm_message
         msg = MIMEText(text)
