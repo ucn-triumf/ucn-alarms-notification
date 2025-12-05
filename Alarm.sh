@@ -5,4 +5,7 @@
 date >> /home/ucn/tmp/testlog
 echo "$1" >> /home/ucn/tmp/testlog
 
-python /home/ucn/online/ucn-alarms-notification/send_alerts.py alarm "$1" >> /home/ucn/tmp/testlog
+python3 /home/ucn/online/ucn-alarms-notification/send_alerts.py alarm "$1" >> /home/ucn/tmp/testlog
+
+python3 /home/ucn/online/ucn-alarms-notification/bird_schedule.py
+# python3 /home/ucn/online/ucn-alarms-notification/bird.py
