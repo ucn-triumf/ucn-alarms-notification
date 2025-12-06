@@ -137,8 +137,18 @@ def alarm():
     shiftid = shiftid[keep_idx].tolist()
     delays = delays[keep_idx]
 
+    # get last resort person
+    last_name = client.odb_get('Shifts/messagebird/vip')
+    last_delay = client.odb_get('Shifts/messagebird/vip_delay_min')
+    
+    onshift_name = np.concatenate((onshift_name, [last_name]))
+    delays = np.concatenate((delays, [last_delay]))
+    shiftid = np.concatenate((shiftid, [999]))
+    onshift_id = np.concatenate((onshift_id, [999]))
+
     # setup who called list
     need_to_call = np.full(len(onshift_name), True)
+
 
     # wait for alarm clear
     t0 = time.monotonic()
