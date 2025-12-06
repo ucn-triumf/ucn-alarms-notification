@@ -157,9 +157,9 @@ def alarm():
 
             # get time delay
             delay  = delays[shiftid.index(onshift_id[i])]
-
+            
             # check if need to call
-            if time.monotonic()-t0 > delay:
+            if time.monotonic()-t0 > delay*60:
                 need_to_call[i] = False
                 number = client.odb_get(f'Shifts/ContactInfo/{onshift_name[i]}/phone_call')
                 call_shifter(client, onshift_name[i], number)
