@@ -6,12 +6,16 @@ import time
 import midas
 import midas.client
 import numpy as np
+from multiprocessing import Process
 
 # settings for rpicker messagebird
 workspaceId = 'd11bd41d-22ce-4e9a-9dd1-98e90c015029'
 channelId = 'b923a1b8-b002-52c8-aa9d-f460d606227d'
 APIKEY = "vB50EVCJnDxWc3lLdM69JkZHN8w2Sgw4pnuC"
 outgoing = "12264588892" # outgoing number
+
+DEBUG = False
+DRY_RUN = False
 
 # place a call
 def place_call(number):
@@ -106,9 +110,14 @@ def call_shifter(client, name, number):
 
     # notify shifter
     alarming = get_triggered_alarms(client)
-    if len(alarming) > 0:
+    if len(alarming) > 0 or DEBUG:
         client.msg(f'Calling {name} due to alarm')
         message = [a[1] for a in alarming]
+
+        if DEBUG: 
+            message = ['phone notify debugging test']
+            print(f'call shifter {name} at {number}')
+
         notify(number, ', '.join(message), client)
     return True
 
@@ -140,22 +149,29 @@ def alarm():
     # get last resort person
     last_name = client.odb_get('Shifts/messagebird/vip')
     last_delay = client.odb_get('Shifts/messagebird/vip_delay_min')
-    
-    onshift_name = np.concatenate((onshift_name, [last_name]))
-    delays = np.concatenate((delays, [last_delay]))
-    shiftid = np.concatenate((shiftid, [999]))
-    onshift_id = np.concatenate((onshift_id, [999]))
+    onshift_name = list(onshift_name) + [last_name]
+    delays = list(delays) + [last_delay]
+    shiftid = list(shiftid) + [999]
+    onshift_id = list(onshift_id) + [999]
 
     # setup who called list
     need_to_call = np.full(len(onshift_name), True)
 
+    if DEBUG: 
+        print(f'onshift_name: {onshift_name}')
+        print(f'delays: {delays}')
+        print(f'shiftid: {shiftid}')
+        print(f'onshift_id: {onshift_id}')
 
     # wait for alarm clear
     t0 = time.monotonic()
     while any(need_to_call):
 
+        if DEBUG:
+            print('='*50)
+
         # stop if all alarms cleaned
-        if len(get_triggered_alarms(client)) == 0:
+        if len(get_triggered_alarms(client)) == 0 and not DEBUG:
             return
 
         # else check if we need to call someone
@@ -167,12 +183,20 @@ def alarm():
 
             # get time delay
             delay  = delays[shiftid.index(onshift_id[i])]
+            name = onshift_name[i]
             
+            if DEBUG:
+                print(f'Time elpased: {time.monotonic()-t0:.0f} ({name} delay: {delay*60})')
+
             # check if need to call
             if time.monotonic()-t0 > delay*60:
                 need_to_call[i] = False
                 number = client.odb_get(f'Shifts/ContactInfo/{onshift_name[i]}/phone_call')
-                call_shifter(client, onshift_name[i], number)
+
+                if not DRY_RUN:
+                    p = Process(target=call_shifter, args=(client, name, number))
+                    p.start()
+                    # call_shifter(client, name, number)
 
         # wait
         time.sleep(1)
