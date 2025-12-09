@@ -7,6 +7,7 @@ import midas
 import midas.client
 import numpy as np
 from multiprocessing import Process
+import sys
 
 # settings for rpicker messagebird
 workspaceId = 'd11bd41d-22ce-4e9a-9dd1-98e90c015029'
@@ -202,4 +203,40 @@ def alarm():
         time.sleep(1)
 
 if __name__ == "__main__":
-    alarm()
+    
+    # get commandline args
+    args = sys.argv[1:]
+
+    # defaults
+    do_testcall = False
+    name = ''
+
+    # if no additional args, run full alarm
+    if len(args) == 0:
+        alarm()
+        
+    else:
+
+        # setup midas client
+        client = midas.client.MidasClient("messagebird")
+    
+        # eval args
+        for arg in args:
+
+            if '--name' in arg:
+                name = arg.split('=')[1]
+            elif '--testcall' in arg:
+                do_testcall = True
+
+        # make test call
+        if do_testcall:
+
+            # get number
+            try:
+                number = client.odb_get(f'/Shifts/ContactInfo/{name}/phone_call')
+            except KeyError as err:
+                client.msg(str(err), is_error=True)
+            
+            # make the call
+            client.msg(f'Placing test call to {name} at {number}')
+            notify(number, "test call from MIDAS", client)        
