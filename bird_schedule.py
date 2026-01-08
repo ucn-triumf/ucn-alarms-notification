@@ -49,8 +49,12 @@ def check_incall(callId):
         headers={"Authorization":f"AccessKey {APIKEY}","Accept":"*/*"},
     )
     data3 = response3.json()
+    if DEBUG:
+        print(f'check in call response:')
+        for key, val in data3.items():
+            print(f'\t{key}: {val}')
 
-    return data3['status']
+    return data3
 
 # play message
 def play_message(callId, message):
@@ -74,13 +78,15 @@ def notify(number, message, client):
     callId = place_call(number)
 
     # wait until call is answered
-    t0 = time.time()
+    t0 = time.monotonic()
     while True:
 
-        status = check_incall(callId)
+        response = check_incall(callId)
+        status = response['status']
 
         # call was answered
         if status == 'ongoing':
+            client.msg('Recipient answered the phone')
             break
 
         # not answered
@@ -88,9 +94,19 @@ def notify(number, message, client):
             client.msg('Recipient did not pick up the phone')
             return
 
+        # failed
+        elif status == 'failed':
+            client.msg(f'Call failed (SIP code {response["hangupSipCode"]}, see https://www.rfc-editor.org/rfc/rfc3261 section 21)')
+            return
+
+        # cancelled
+        elif status == 'cancelled':
+            client.msg('Call cancelled')
+            return
+
         # timeout
-        if time.time() - t0 > 60:
-            client.msg('Call timeout (60s)')
+        if time.monotonic() - t0 > 60:
+            client.msg('No response call timeout (60s)')
             return
 
         # check again later
@@ -99,6 +115,8 @@ def notify(number, message, client):
     time.sleep(0.5)
 
     # play the message
+    if DEBUG:
+        print(f'Playing message in call')
     play_message(callId, message+',')
 
 # get all triggered alarms
